@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "kafka.fullname" . }}-script-configmap
+  labels:
+    {{- include "kafka.labels.standard" . | nindent 4 }}
+data:
+  run.sh: |+
+    #!/bin/sh -x
+
+    LISTENERS_BROKER_PORT={{ .Values.listeners.broker.port | quote }}
+    LISTENERS_EXTERNAL_ENABLED={{ .Values.listeners.external.enabled | quote }}
+    LISTENERS_EXTERNAL_PORT={{ .Values.listeners.external.port | quote }}
+    LISTENERS_EXTERNAL_PROTOCOL={{ .Values.listeners.external.protocol | quote }}
+    LISTENERS_EXTERNAL_HOST_NAME_PREFIX={{ .Values.listeners.external.hostNamePrefix | quote }}
+    LISTENERS_EXTERNAL_DOMAIN_NAME={{ .Values.listeners.external.domainName | quote }}
+    LISTENERS_EXTERNAL_ADVERTISED_HOST_NAME={{ .Values.listeners.external.advertisedHostName | quote }}
+    LISTENERS_EXTERNAL_FIRST_NODE_PORT={{ .Values.listeners.external.firstNodePort | quote }}
+    LISTENERS_EXTERNAL_SERVICE_TYPE={{ .Values.listeners.external.service.type | quote }}
+    {{- if .Values.jmx.enabled }}
+    export JMX_PORT={{ .Values.jmx.port | quote }}
+    {{- end }}
+
+    BROKER_ID=${POD_NAME##*-}
+    FQDN=$(hostname -f)
+
+    LISTENERS="PLAINTEXT://${FQDN}:${LISTENERS_BROKER_PORT}"
+    ADVERTISED_LISTENERS="PLAINTEXT://${FQDN}:${LISTENERS_BROKER_PORT}"
+
+    if [ "${LISTENERS_EXTERNAL_ENABLED}" = "true" ]; then
+      if [ "${LISTENERS_EXTERNAL_SERVICE_TYPE}" = "LoadBalancer" ]; then
+        if [ -n "${LISTENERS_EXTERNAL_HOST_NAME_PREFIX}" -a -n "${LISTENERS_EXTERNAL_DOMAIN_NAME}" ]; then
+          EXTERNAL_HOST_NAME="${LISTENERS_EXTERNAL_HOST_NAME_PREFIX}-${BROKER_ID}.${LISTENERS_EXTERNAL_DOMAIN_NAME}"
+        else
+          EXTERNAL_HOST_NAME="${FQDN}"
+        fi
+        EXTERNAL_PORT="${LISTENERS_EXTERNAL_PORT}"
+      else
+        if [ -n "${LISTENERS_EXTERNAL_ADVERTISED_HOST_NAME}" ]; then
+          EXTERNAL_HOST_NAME="${LISTENERS_EXTERNAL_ADVERTISED_HOST_NAME}"
+        else
+          EXTERNAL_HOST_NAME="${HOST_IP}"
+        fi
+        EXTERNAL_PORT=$(($LISTENERS_EXTERNAL_FIRST_NODE_PORT+$BROKER_ID))
+      fi
+      LISTENERS="${LISTENERS},${LISTENERS_EXTERNAL_PROTOCOL}://${FQDN}:${LISTENERS_EXTERNAL_PORT}"
+      ADVERTISED_LISTENERS="${ADVERTISED_LISTENERS},${LISTENERS_EXTERNAL_PROTOCOL}://${EXTERNAL_HOST_NAME}:${EXTERNAL_PORT}"
+    fi
+
+    echo "overriding broker.id with $BROKER_ID"
+    echo "overriding listeners with $LISTENERS"
+    echo "overriding advertised.listeners with $ADVERTISED_LISTENERS"
+
+    exec "$KAFKA_HOME"/bin/kafka-server-start.sh "$KAFKA_HOME"/config/server.properties \
+            --override broker.id=$BROKER_ID \
+            --override listeners=$LISTENERS \
+            --override advertised.listeners=$ADVERTISED_LISTENERS

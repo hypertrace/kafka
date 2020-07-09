@@ -1,0 +1,171 @@
+# Name of service
+nameOverride: ""
+fullnameOverride: ""
+
+# Number of pods to deploy
+replicaCount: 1
+
+# Docker container to deploy
+image:
+  repository: "hypertrace/kafka"
+  pullPolicy: "IfNotPresent"
+
+imagePullSecrets: []
+
+# Resources granted to pod
+resources:
+  requests:
+    cpu: "0.1"
+    memory: "512Mi"
+
+podAnnotations: {}
+
+serviceAccount:
+  create: true
+  name: ""
+
+updateStrategy:
+  type: RollingUpdate
+
+podManagementPolicy: OrderedReady
+
+podDisruptionBudget:
+  enabled: false
+  maxUnavailable: 1
+  minAvailable: ""
+
+livenessProbe: {}
+
+readinessProbe:
+  tcpSocket:
+    port: 9092
+  initialDelaySeconds: 10
+  periodSeconds: 30
+  timeoutSeconds: 1
+
+terminationGracePeriodSeconds: 60
+
+tolerations: []
+
+nodeSelector: {}
+
+affinity: {}
+
+securityContext: {}
+
+# Persistence volume
+volume:
+  storageClassName: standard
+  storage: 2Gi
+
+# Set any JVM options like -Xmx or others
+javaOpts: "-Xms128M -Xmx400M"
+
+headlessServiceName: ""
+
+# Kafka configuration
+config:
+  autoCreateTopicsEnable: true
+  compressionType: gzip
+  defaultReplicationFactor: 1
+  deleteTopicEnable: true
+  groupInitialRebalanceDelayMs: 3000
+  interBrokerListenerName: PLAINTEXT
+  logDirs: /var/lib/kafka/data/topics
+  #logFlushIntervalMessages: 10000
+  logFlushIntervalMessages: ""
+  #logFlushIntervalMs: 1000
+  logFlushIntervalMs: ""
+  logRetentionBytes: 1073741824
+  logRetentionCheckIntervalMs: 300000
+  logRetentionHours: 24
+  #logRollMs: -1
+  logRollMs: ""
+  logSegmentBytes: 1073741824
+  #messageMaxBytes: 1000012
+  messageMaxBytes: ""
+  minInsyncReplicas: 1
+  numIoThreads: 8
+  numNetworkThreads: 3
+  numPartitions: 12
+  numRecoveryThreadsPerDataDir: 1
+  offsetsRetentionMinutes: 10080
+  offsetsTopicReplicationFactor: 1
+  socketReceiveBufferBytes: 102400
+  socketRequestMaxBytes: 104857600
+  socketSendBufferBytes: 102400
+  transactionStateLogMinIsr: 3
+  transactionStateLogReplicationFactor: 1
+  #zookeeperConnectOverride: zookeeper:2181
+  zookeeperConnectOverride: ""
+  zookeeperConnectionTimeoutMs: 30000
+  zookeeperSessionTimeoutMs: 30000
+
+# Listeners configuration
+listeners:
+  broker:
+    enabled: true
+    port: 9092
+    service:
+      port: 9092
+      type: ClusterIP
+      annotations: {}
+  external:
+    enabled: false
+    port: 9094
+    protocol: "EXTERNAL"
+    # for service type LoadBalancer
+    hostNamePrefix: ""
+    domainName: ""
+    # for service type NodePort
+    firstNodePort: 31090
+    advertisedHostName: ""
+    service:
+      port: 9094
+      type: NodePort
+      loadBalancerSourceRanges: []
+      annotations: {}
+
+# Monitoring
+servicemonitor:
+  enabled: false
+  interval: 15s
+  secure: false
+  tlsConfig: {}
+
+# Storage class
+storageclass:
+  enabled: false
+  name: kafka
+  annotations: {}
+  provisioner: kubernetes.io/gce-pd
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+  parameters:
+    type: pd-standard
+
+# JMX port
+jmx:
+  enabled: false
+  port: 5555
+
+## Prometheus Exporter Configuration
+## ref: https://prometheus.io/docs/instrumenting/exporters/
+prometheus:
+  ## JMX Exporter Configuration
+  ## ref: https://github.com/prometheus/jmx_exporter
+  jmx:
+    enabled: false
+    image:
+      repository: solsson/kafka-prometheus-jmx-exporter@sha256
+      tag: 6f82e2b0464f50da8104acd7363fb9b995001ddff77d248379f8788e78946143
+      pullPolicy: IfNotPresent
+    port: 5556
+    resources:
+      requests:
+        cpu: "0.1"
+        memory: "256Mi"
+
+prometheusrule:
+  enabled: false
+  annotations: {}

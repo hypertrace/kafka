@@ -1,0 +1,38 @@
+{{- if .Values.listeners.external.enabled }}
+{{- $fullName := include "kafka.fullname" . }}
+{{- $replicaCount := .Values.replicaCount | int }}
+{{- $root := . }}
+{{- range $i, $e := until $replicaCount }}
+{{- $targetPod := printf "%s-%d" (printf "%s" $fullName) $i }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "kafka.fullname" $ }}-external-{{ $i }}
+  annotations:
+    {{- toYaml $root.Values.listeners.external.service.annotations | nindent 4 }}
+  labels:
+    pod: {{ $targetPod }}
+    {{- include "kafka.labels.standard" $ | nindent 4 }}
+spec:
+  type: {{ $root.Values.listeners.external.service.type }}
+  ports:
+    - name: external
+      port: {{ $root.Values.listeners.external.service.port }}
+      targetPort: external
+      protocol: TCP
+      {{- if eq $root.Values.listeners.external.service.type "NodePort" }}
+      nodePort: {{ add $root.Values.listeners.external.firstNodePort $i }}
+      {{- end }}
+  {{- if and (eq $root.Values.listeners.external.service.type "LoadBalancer") $root.Values.listeners.external.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- range $root.Values.listeners.external.service.loadBalancerSourceRanges }}
+    - {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  selector:
+    app: {{ template "kafka.name" $ }}
+    release: {{ $root.Release.Name }}
+    statefulset.kubernetes.io/pod-name: {{ $targetPod }}
+{{- end }}
+{{- end }}

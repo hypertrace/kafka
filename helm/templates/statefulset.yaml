@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "kafka.fullname" . }}
+  labels:
+    {{- include "kafka.labels.standard" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  revisionHistoryLimit: 2
+  serviceName: {{ template "kafka.headless.service" . }}
+  selector:
+    matchLabels:
+      app: {{ include "kafka.name" . }}
+      release: {{ .Release.Name }}
+  updateStrategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  podManagementPolicy: {{ .Values.podManagementPolicy }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "kafka.name" . }}
+        release: {{ .Release.Name }}
+      {{- if .Values.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ template "kafka.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Chart.Version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            {{- range $key, $value := .Values.listeners }}
+            {{- if or ( eq $key "broker" ) (eq $value.enabled true) }}
+            - name: {{ $key | quote }}
+              containerPort: {{ $value.port }}
+            {{- end }}
+            {{- end }}
+            {{- if .Values.jmx.port }}
+            - name: "jmx"
+              containerPort: {{ .Values.jmx.port }}
+            {{- end }}
+          command: ["/opt/kafka/bin/run.sh"]
+          volumeMounts:
+            - name: {{ include "kafka.fullname" . }}-config
+              mountPath: /opt/kafka/config/server.properties
+              subPath: server.properties
+            - name: {{ include "kafka.fullname" . }}-config
+              mountPath: /opt/kafka/config/log4j.properties
+              subPath: log4j.properties
+            - name: {{ include "kafka.fullname" . }}-script-config
+              mountPath: /opt/kafka/bin/run.sh
+              subPath: run.sh
+            - name: data
+              mountPath: /var/lib/kafka/data
+          {{- if .Values.livenessProbe }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          {{- end }}
+          {{- if .Values.readinessProbe }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: KAFKA_HOME
+              value: /opt/kafka
+            - name: KAFKA_HEAP_OPTS
+              value: {{ .Values.javaOpts | quote }}
+        {{- if .Values.prometheus.jmx.enabled }}
+        - name: prometheus-jmx-exporter
+          image: "{{ .Values.prometheus.jmx.image.repository }}:{{ .Values.prometheus.jmx.image.tag }}"
+          imagePullPolicy: "{{ .Values.prometheus.jmx.image.pullPolicy }}"
+          command:
+            - java
+            - -XX:+UnlockExperimentalVMOptions
+            - -XX:+UseCGroupMemoryLimitForHeap
+            - -XX:MaxRAMFraction=1
+            - -XshowSettings:vm
+            - -jar
+            - jmx_prometheus_httpserver.jar
+            - {{ .Values.prometheus.jmx.port | quote }}
+            - /etc/jmx-kafka/jmx-kafka-prometheus.yml
+          ports:
+            - name: jmx-prometheus
+              containerPort: {{ .Values.prometheus.jmx.port }}
+          resources:
+            {{- toYaml .Values.prometheus.jmx.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ include "kafka.fullname" . }}-jmx-config
+              mountPath: /etc/jmx-kafka
+        {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
+      volumes:
+        - name: {{ include "kafka.fullname" . }}-config
+          configMap:
+            name: {{ include "kafka.fullname" . }}-configmap
+        {{- if .Values.prometheus.jmx.enabled }}
+        - name: {{ include "kafka.fullname" . }}-jmx-config
+          configMap:
+            name: {{ include "kafka.fullname" . }}-jmx-configmap
+        {{- end }}
+        - name: {{ include "kafka.fullname" . }}-script-config
+          configMap:
+            name: {{ include "kafka.fullname" . }}-script-configmap
+            defaultMode: 0555
+      {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        storageClassName: {{ .Values.volume.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.volume.storage }}

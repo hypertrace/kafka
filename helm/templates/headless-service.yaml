@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "kafka.headless.service" . }}
+  annotations:
+    {{- toYaml .Values.listeners.broker.service.annotations | nindent 4 }}
+  labels:
+    {{- include "kafka.labels.standard" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - name: broker
+      port: {{ .Values.listeners.broker.service.port }}
+      targetPort: broker
+      protocol: TCP
+  selector:
+    app: {{ template "kafka.name" . }}
+    release: {{ .Release.Name }}
