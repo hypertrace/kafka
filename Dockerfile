@@ -6,11 +6,8 @@ ENV KAFKA_VERSION=2.3.0 SCALA_VERSION=2.12
 RUN set -ex; \
   export DEBIAN_FRONTEND=noninteractive; \
   runDeps='netcat-openbsd'; \
-  buildDeps='curl ca-certificates gnupg dirmngr apt-transport-https'; \
+  buildDeps='curl ca-certificates gnupg dirmngr'; \
   apt-get update && apt-get install -y $runDeps $buildDeps --no-install-recommends; \
-  echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list; \
-  curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg add - ; \
-  apt-get update && apt-get install -y google-cloud-sdk --no-install-recommends; \
   \
   curl -s -L -o KEYS https://www.apache.org/dist/kafka/KEYS; \
   gpg --import KEYS && rm KEYS; \
@@ -31,7 +28,6 @@ RUN set -ex; \
   \
   apt-get purge -y --auto-remove $buildDeps; \
   rm -rf /var/lib/apt/lists/*; \
-  rm -rf /etc/apt/sources.list.d/google-cloud-sdk.list; \
   rm -rf /var/log/dpkg.log /var/log/alternatives.log /var/log/apt /etc/ssl/certs /root/.gnupg
 
 WORKDIR /opt/kafka
