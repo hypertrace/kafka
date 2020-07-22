@@ -91,6 +91,17 @@ config:
   numRecoveryThreadsPerDataDir: 1
   offsetsRetentionMinutes: 10080
   offsetsTopicReplicationFactor: 1
+  replicaFetchBackoffMs: ""
+  replicaFetchMaxBytes: ""
+  replicaFetchMinBytes: ""
+  replicaFetchResponseMaxBytes: ""
+  replicaFetchWaitMaxMs: ""
+  replicaHighWatermarkCheckpointIntervalMs: ""
+  replicaLagTimeMaxMs: ""
+  replicaSocketReceiveBufferBytes: ""
+  replicaSocketTimeoutMs: ""
+  replicationQuotaWindowNum: ""
+  replicationQuotaWindowSizeSeconds: ""
   socketReceiveBufferBytes: 102400
   socketRequestMaxBytes: 104857600
   socketSendBufferBytes: 102400

@@ -188,6 +188,65 @@ data:
     # We override this to 0 here as it makes for a better out-of-the-box experience for development and testing.
     # However, in production environments the default value of 3 seconds is more suitable as this will help to avoid unnecessary, and potentially expensive, rebalances during application startup.
     group.initial.rebalance.delay.ms={{ int .Values.config.groupInitialRebalanceDelayMs }}
+
+    ############################# Replication #############################
+
+    {{- if .Values.config.replicaFetchBackoffMs }}
+    # The amount of time to sleep when fetch partition error occurs
+    replica.fetch.backoff.ms={{ int .Values.config.replicaFetchBackoffMs }}
+    {{- end }}
+
+    {{- if .Values.config.replicaFetchMaxBytes }}
+    # The number of bytes of messages to attempt to fetch for each partition
+    replica.fetch.max.bytes={{ int .Values.config.replicaFetchMaxBytes }}
+    {{- end }}
+
+    {{- if .Values.config.replicaFetchMinBytes }}
+    # Minimum bytes expected for each fetch response. If not enough bytes, wait up to replicaMaxWaitTimeMs
+    replica.fetch.min.bytes={{ int .Values.config.replicaFetchMinBytes }}
+    {{- end }}
+
+    {{- if .Values.config.replicaFetchResponseMaxBytes }}
+    # Maximum bytes expected for the entire fetch response
+    replica.fetch.response.max.bytes={{ int .Values.config.replicaFetchResponseMaxBytes }}
+    {{- end }}
+
+    {{- if .Values.config.replicaFetchWaitMaxMs }}
+    # max wait time for each fetcher request issued by follower replicas
+    replica.fetch.wait.max.ms={{ int .Values.config.replicaFetchWaitMaxMs }}
+    {{- end }}
+
+    {{- if .Values.config.replicaHighWatermarkCheckpointIntervalMs }}
+    # The frequency with which the high watermark is saved out to disk
+    replica.high.watermark.checkpoint.interval.ms={{ int .Values.config.replicaHighWatermarkCheckpointIntervalMs }}
+    {{- end }}
+
+    {{- if .Values.config.replicaLagTimeMaxMs }}
+    # If a follower hasn't sent any fetch requests or hasn't consumed up to the leaders log end offset for at least this time,
+    # the leader will remove the follower from isr
+    replica.lag.time.max.ms={{ int .Values.config.replicaLagTimeMaxMs }}
+    {{- end }}
+
+    {{- if .Values.config.replicaSocketReceiveBufferBytes }}
+    # The socket receive buffer for network requests
+    replica.socket.receive.buffer.bytes={{ int .Values.config.replicaSocketReceiveBufferBytes }}
+    {{- end }}
+
+    {{- if .Values.config.replicaSocketTimeoutMs }}
+    # The socket timeout for network requests. Its value should be at least replica.fetch.wait.max.ms
+    replica.socket.timeout.ms={{ int .Values.config.replicaSocketTimeoutMs }}
+    {{- end }}
+
+    {{- if .Values.config.replicationQuotaWindowNum }}
+    # The number of samples to retain in memory for replication quotas
+    replication.quota.window.num={{ int .Values.config.replicationQuotaWindowNum }}
+    {{- end }}
+
+    {{- if .Values.config.replicationQuotaWindowSizeSeconds }}
+    # The time span of each sample for replication quotas
+    replication.quota.window.size.seconds={{ int .Values.config.replicationQuotaWindowSizeSeconds }}
+    {{- end }}
+
   log4j.properties: |+
     # Licensed to the Apache Software Foundation (ASF) under one or more
     # contributor license agreements.  See the NOTICE file distributed with
