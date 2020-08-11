@@ -3,23 +3,23 @@ FROM alpine:3.12 AS kafka
 ENV SCALA_VERSION 2.12
 ENV KAFKA_VERSION 2.3.0
 
-WORKDIR /kafka
-COPY install.sh /kafka/install
-RUN /kafka/install && rm /kafka/install
+WORKDIR /opt/kafka
+COPY install.sh /opt/kafka/install
+RUN /opt/kafka/install && rm /opt/kafka/install
 
-COPY wait-for-zookeeper.sh /kafka/bin
-COPY start.sh /kafka/bin
+COPY wait-for-zookeeper.sh /opt/kafka/bin
+COPY start.sh /opt/kafka/bin
 
 # Share the same base image to reduce layers
 FROM hypertrace/java:11
 
 MAINTAINER Hypertrace "https://www.hypertrace.org/"
 
-WORKDIR /kafka
+WORKDIR /opt/kafka
 
-RUN adduser -g '' -h /kafka -D kafka
+RUN adduser -g '' -h /opt/kafka -D kafka
 
-COPY --from=kafka --chown=kafka /kafka /kafka
+COPY --from=kafka --chown=kafka /opt/kafka /opt/kafka
 
 USER kafka
 
@@ -33,6 +33,6 @@ EXPOSE 2181 9092 19092
 # flips the service unhealthy and can interfere with docker-compose v2 condition: service_healthy
 HEALTHCHECK --interval=2s --start-period=10s --timeout=5s \
   # We use bootstrap-server, not zookeeper, as KIP-500 will eventually remove the dependency
-  CMD /kafka/bin/kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list > /dev/null || exit 1
+  CMD /opt/kafka/bin/kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list > /dev/null || exit 1
 
-ENTRYPOINT /kafka/bin/start.sh
+ENTRYPOINT /opt/kafka/bin/start.sh

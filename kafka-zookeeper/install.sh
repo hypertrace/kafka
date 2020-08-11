@@ -12,21 +12,21 @@ curl -sSL $APACHE_MIRROR/kafka/$KAFKA_VERSION/kafka_$SCALA_VERSION-$KAFKA_VERSIO
 mv kafka_$SCALA_VERSION-$KAFKA_VERSION/* .
 
 # Remove bash as our images doesn't have it, and it isn't required
-sed -i 's~#!/bin/bash~#!/bin/sh~g' /kafka/bin/*sh
+sed -i 's~#!/bin/bash~#!/bin/sh~g' /opt/kafka/bin/*sh
 
 # Set explicit, basic configuration
 cat > config/server.properties <<-EOF
 broker.id=0
 zookeeper.connect=127.0.0.1:2181
 replica.socket.timeout.ms=1500
-log.dirs=/kafka/logs
+log.dirs=/opt/kafka/data
 auto.create.topics.enable=true
 offsets.topic.replication.factor=1
 listeners=PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:19092
 listener.security.protocol.map=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
 EOF
 
-mkdir /kafka/logs
+mkdir /opt/kafka/data
 
 echo "*** Cleaning Up"
 apk del jq curl --purge
