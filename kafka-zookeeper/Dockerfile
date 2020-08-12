@@ -21,7 +21,9 @@ ARG USER=kafka
 
 RUN adduser -g '' -h /opt/kafka -D ${USER}
 
-COPY --from=kafka --chown=${USER} /opt/kafka /opt/kafka
+# use hard-coded username as a workaround to circleci build failure.
+# see https://github.com/moby/moby/issues/35018 for more details.
+COPY --from=kafka --chown=kafka /opt/kafka /opt/kafka
 
 USER ${USER}
 
