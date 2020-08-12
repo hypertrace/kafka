@@ -17,11 +17,13 @@ MAINTAINER Hypertrace "https://www.hypertrace.org/"
 
 WORKDIR /opt/kafka
 
-RUN adduser -g '' -h /opt/kafka -D kafka
+ARG USER=kafka
 
-COPY --from=kafka --chown=kafka /opt/kafka /opt/kafka
+RUN adduser -g '' -h /opt/kafka -D ${USER}
 
-USER kafka
+COPY --from=kafka --chown=${USER} /opt/kafka /opt/kafka
+
+USER ${USER}
 
 # Port 19092 is for connections from the Docker host
 EXPOSE 2181 9092 19092
