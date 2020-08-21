@@ -1,0 +1,14 @@
+#!/bin/sh
+# HEALTHCHECK for use in `docker ps` or `docker-compose ps`.
+# It can also be used as a readiness probe in k8s
+set -eu
+
+IP="$(hostname -i || echo '127.0.0.1')"
+
+# kafka-topics.sh invokes a Java command which can overrun CPU quota, so we
+# check the services at TCP layer instead.
+if nc -z ${IP} 9092 && echo ruok | nc ${IP} 2181; then
+	exit 0
+fi
+
+exit 1
