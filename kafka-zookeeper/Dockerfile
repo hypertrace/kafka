@@ -7,8 +7,9 @@ FROM cimg/openjdk:14.0.2 AS install
 # Use latest stable release here. Scala 2.13+ supports JRE 14
 ENV KAFKA_VERSION=2.6.0 SCALA_VERSION=2.13
 
+USER root
 WORKDIR /install
-ADD docker/collector/kafka/install /tmp/install
+ADD install /tmp/install
 RUN /tmp/install && rm /tmp/install
 
 # Share the same base image to reduce layers used in testing
@@ -16,7 +17,7 @@ FROM hypertrace/java:11
 MAINTAINER Hypertrace "https://www.hypertrace.org/"
 
 # Add HEALTHCHECK and ENTRYPOINT scripts into the default search path
-COPY docker/collector/kafka/docker-bin/* /usr/local/bin/
+COPY docker-bin/* /usr/local/bin/
 
 # All Kafka content including binaries and logs write under WORKDIR
 WORKDIR /opt/kafka
