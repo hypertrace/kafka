@@ -34,7 +34,7 @@ COPY --from=install --chown=${USER} /install .
 ENV KAFKA_ADVERTISED_HOST_NAME=localhost
 EXPOSE 2181 9092 19092
 
-# We use start period of 10s to avoid marking Kafka unhealthy on slow or contended CI hosts
-HEALTHCHECK --interval=1s --start-period=10s --timeout=2s CMD ["docker-healthcheck"]
+# We use start period of 30s to avoid marking Kafka unhealthy on slow or contended CI hosts
+HEALTHCHECK --interval=1s --start-period=30s --timeout=2s CMD ["docker-healthcheck"]
 
 ENTRYPOINT ["start-kafka-zookeeper"]
