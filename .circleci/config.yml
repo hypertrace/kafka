@@ -4,7 +4,7 @@ executors:
   gradle_docker:
     docker:
       # This image isn't used to build Java project, rather to invoke Docker with Gradle.
-      # Using latest JDK image will give more recent Docker, albeit slightly behind cimg/base
+      # The version of Docker on cimg/openjdk tends to be slightly behind cimg/base.
       - image: cimg/openjdk:14.0.2
   helm:
     docker:
@@ -32,10 +32,10 @@ commands:
       - restore_cache:
           keys: # Use gradle version for cache, so it doesn't download every time
             - v1-dependencies-{{ checksum "./gradle/wrapper/gradle-wrapper.properties" }}
-      # Update this according to the output of the image used to override the default of Docker 17
-      #   Ex. docker run -it --rm cimg/openjdk:14.0.2 docker -v
+      # The remote docker version is independent from what's installed in the gradle_docker image and defaults to Docker 17.
+      #   Use the latest value from https://circleci.com/docs/2.0/building-docker-images/#docker-version
       - setup_remote_docker:
-          version: 19.03.11
+          version: 19.03.12
   save_populated_cache:
     description: "Save the gradle binary to the cache so it doesn't have to redownload"
     steps:
