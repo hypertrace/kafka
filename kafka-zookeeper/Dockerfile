@@ -1,42 +1,40 @@
-FROM alpine:3.12 AS kafka
+# This Dockerfile and supporting content derived originally from
+# https://github.com/openzipkin/zipkin/blob/master/docker/collector/kafka/
 
-ENV SCALA_VERSION 2.12
-ENV KAFKA_VERSION 2.3.0
+# Using the same image as we use in CircleCI to avoid transfer costs
+FROM cimg/openjdk:14.0.2 AS install
 
-WORKDIR /opt/kafka
-COPY install.sh /opt/kafka/install
-RUN /opt/kafka/install && rm /opt/kafka/install
+# Use latest stable release here. Scala 2.13+ supports JRE 14
+ENV KAFKA_VERSION=2.6.0 SCALA_VERSION=2.13
 
-COPY wait-for-zookeeper.sh /opt/kafka/bin
-COPY start.sh /opt/kafka/bin
+USER root
+WORKDIR /install
+ADD install /tmp/install
+RUN /tmp/install && rm /tmp/install
 
-# Share the same base image to reduce layers
+# Share the same base image to reduce layers used in testing
 FROM hypertrace/java:11
-
 MAINTAINER Hypertrace "https://www.hypertrace.org/"
 
+# Add HEALTHCHECK and ENTRYPOINT scripts into the default search path
+COPY docker-bin/* /usr/local/bin/
+
+# All Kafka content including binaries and logs write under WORKDIR
 WORKDIR /opt/kafka
 
+# Ensure the process doesn't run as root
 ARG USER=kafka
-
-RUN adduser -g '' -h /opt/kafka -D ${USER}
-
-# use hard-coded username as a workaround to circleci build failure.
-# see https://github.com/moby/moby/issues/35018 for more details.
-COPY --from=kafka --chown=kafka /opt/kafka /opt/kafka
-
+RUN adduser -g '' -h ${PWD} -D ${USER}
 USER ${USER}
 
-# Port 19092 is for connections from the Docker host
+# Copy binaries and config we installed earlier
+COPY --from=install --chown=${USER} /install .
+
+# ${KAFKA_ADVERTISED_HOST_NAME}:19092 is for connections from the Docker host
+ENV KAFKA_ADVERTISED_HOST_NAME=localhost
 EXPOSE 2181 9092 19092
 
-# We use start period of 10s to avoid marking Kafka unhealthy on slow or contended CI hosts
-#
-# We use a timeout of 5s as kafka-topics.sh invokes a Java command which can be slow when
-# multiple processes are starting up (ex docker-compose with >10 containers). A smaller timeout
-# flips the service unhealthy and can interfere with docker-compose v2 condition: service_healthy
-HEALTHCHECK --interval=2s --start-period=10s --timeout=5s \
-  # We use bootstrap-server, not zookeeper, as KIP-500 will eventually remove the dependency
-  CMD /opt/kafka/bin/kafka-topics.sh --bootstrap-server 127.0.0.1:9092 --list > /dev/null || exit 1
+# We use start period of 30s to avoid marking Kafka unhealthy on slow or contended CI hosts
+HEALTHCHECK --interval=1s --start-period=30s --timeout=5s CMD ["docker-healthcheck"]
 
-ENTRYPOINT /opt/kafka/bin/start.sh
+ENTRYPOINT ["start-kafka-zookeeper"]
