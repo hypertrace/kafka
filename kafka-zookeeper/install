@@ -16,8 +16,6 @@ sed -i 's~#!/bin/bash~#!/bin/sh~g' bin/*sh
 
 # don't log ZK connections
 sed -i 's~log4j.logger.org.apache.zookeeper=INFO~log4j.logger.org.apache.zookeeper=WARN~g' config/log4j.properties
-# allow ruok command for testing ZK health
-echo 4lw.commands.whitelist=srvr, ruok >> config/zookeeper.properties
 
 # Make sure you use relative paths in references like this, so that installation
 # is decoupled from runtime
@@ -29,6 +27,7 @@ dataDir=./data/zookeeper
 clientPort=2181
 maxClientCnxns=0
 admin.enableServer=false
+# allow ruok command for testing ZK health
 4lw.commands.whitelist=srvr,ruok
 EOF
 
