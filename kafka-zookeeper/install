@@ -14,16 +14,30 @@ wget -qO- $APACHE_MIRROR/kafka/$KAFKA_VERSION/kafka_$SCALA_VERSION-$KAFKA_VERSIO
 # Remove bash as our images don't have it, and it isn't required
 sed -i 's~#!/bin/bash~#!/bin/sh~g' bin/*sh
 
-# log.dirs is about Kafka's data not Log4J
-DATA_DIR=data
-mkdir ${DATA_DIR}
+# don't log ZK connections
+sed -i 's~log4j.logger.org.apache.zookeeper=INFO~log4j.logger.org.apache.zookeeper=WARN~g' config/log4j.properties
+# allow ruok command for testing ZK health
+echo 4lw.commands.whitelist=srvr, ruok >> config/zookeeper.properties
+
+# Make sure you use relative paths in references like this, so that installation
+# is decoupled from runtime
+mkdir -p data/kafka data/zookeeper logs
 
 # Set explicit, basic configuration
+cat > config/zookeeper.properties <<-EOF
+dataDir=./data/zookeeper
+clientPort=2181
+maxClientCnxns=0
+admin.enableServer=false
+4lw.commands.whitelist=srvr,ruok
+EOF
+
 cat > config/server.properties <<-EOF
 broker.id=0
 zookeeper.connect=127.0.0.1:2181
 replica.socket.timeout.ms=1500
-log.dirs=${DATA_DIR}
+# log.dirs is about Kafka's data not Log4J
+log.dirs=./data/kafka
 auto.create.topics.enable=true
 offsets.topic.replication.factor=1
 listeners=PLAINTEXT://0.0.0.0:9092,PLAINTEXT_HOST://0.0.0.0:19092

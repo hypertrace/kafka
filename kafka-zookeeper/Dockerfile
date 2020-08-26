@@ -24,7 +24,7 @@ WORKDIR /opt/kafka
 
 # Ensure the process doesn't run as root
 ARG USER=kafka
-RUN adduser -g '' -h  ${PWD} -D ${USER}
+RUN adduser -g '' -h ${PWD} -D ${USER}
 USER ${USER}
 
 # Copy binaries and config we installed earlier
@@ -35,6 +35,6 @@ ENV KAFKA_ADVERTISED_HOST_NAME=localhost
 EXPOSE 2181 9092 19092
 
 # We use start period of 30s to avoid marking Kafka unhealthy on slow or contended CI hosts
-HEALTHCHECK --interval=1s --start-period=30s --timeout=2s CMD ["docker-healthcheck"]
+HEALTHCHECK --interval=1s --start-period=30s --timeout=5s CMD ["docker-healthcheck"]
 
 ENTRYPOINT ["start-kafka-zookeeper"]
