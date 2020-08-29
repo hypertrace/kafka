@@ -52,18 +52,29 @@ jobs:
       - gradle:
           args: dockerBuildImages
       - save_populated_cache
-  publish:
+  merge-publish:
     executor: gradle_docker
     steps:
       - setup_build_environment
       - gradle:
-          args: :tag -Prelease
+          args: dockerPushImages
+  release-publish:
+    executor: gradle_docker
+    steps:
+      - setup_build_environment
+      - gradle:
+          args: :tag
+      - run:
+          name: Remove trigger tag
+          command: git tag -d release-$(git describe --abbrev=0)
+      - gradle:
+          args: dockerPushImages
       - add_ssh_keys:
           fingerprints:
             - '2e:a6:fe:72:9f:a4:04:cd:6d:c9:c9:c1:2b:4f:e3:6c'
-      - run: git push origin $(./gradlew -q :printVersion)
-      - gradle:
-          args: dockerPushImages
+      - run:
+          name: Update remote tags
+          command: git push origin :refs/tags/release-$(git describe --abbrev=0) refs/tags/$(git describe --abbrev=0)
   validate-charts:
     executor: helm
     steps:
@@ -73,7 +84,7 @@ jobs:
           command: |
             helm lint --strict ./helm/
             helm template ./helm/
-  package-charts:
+  release-charts:
     executor: helm
     steps:
       - checkout
@@ -95,7 +106,7 @@ workflows:
     jobs:
       - build
       - validate-charts
-      - publish:
+      - merge-publish:
           context: hypertrace-publishing
           requires:
             - build
@@ -104,11 +115,19 @@ workflows:
             branches:
               only:
                 - main
-      - package-charts:
+      - release-publish:
           context: hypertrace-publishing
-          requires:
-            - publish
           filters:
             branches:
-              only:
-                - main
+              ignore: /.*/
+            tags:
+              only: /^release-.*/
+      - release-charts:
+          context: hypertrace-publishing
+          requires:
+            - release-publish
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^release-.*/
