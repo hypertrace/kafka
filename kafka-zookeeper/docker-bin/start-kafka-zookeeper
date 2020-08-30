@@ -13,16 +13,14 @@ KAFKA_CONFIG=./config/server.properties
 grep -qF -- "$ADVERTISED_LISTENERS" $KAFKA_CONFIG || echo "$ADVERTISED_LISTENERS" >> $KAFKA_CONFIG
 
 echo Starting ZooKeeper
-
 bin/kafka-run-class.sh \
   -Dlog4j.configuration=file:./config/log4j.properties \
   org.apache.zookeeper.server.quorum.QuorumPeerMain ./config/zookeeper.properties &
 
 # Wait for ZooKeeper to be ok
-until echo ruok | nc 127.0.0.1 2181
-do
-  sleep 1
-done
+until echo ruok | nc 127.0.0.1 2181 > /dev/null; do sleep 1; done
 
 echo Starting Kafka
-exec bin/kafka-run-class.sh -name kafkaServer -Dlog4j.configuration=file:./config/log4j.properties kafka.Kafka ./config/server.properties
+exec bin/kafka-run-class.sh -name kafkaServer \
+  -Dlog4j.configuration=file:./config/log4j.properties \
+  kafka.Kafka ./config/server.properties

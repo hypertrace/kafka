@@ -13,9 +13,13 @@ wget -qO- $APACHE_MIRROR/kafka/$KAFKA_VERSION/kafka_$SCALA_VERSION-$KAFKA_VERSIO
 
 # Remove bash as our images don't have it, and it isn't required
 sed -i 's~#!/bin/bash~#!/bin/sh~g' bin/*sh
+# Remove bash syntax relating to irrelevant CYGWIN (prevents console errors)
+sed -i -e 's/$(uname -a) =~ "CYGWIN"/0/g' -e  's/.*\(\( CYGWIN \)\).*//g' bin/*
+# Remove bash shopt commands (kafka-start-class uses nullglob, but it is non-critical to avoid it)
+sed -i 's/.*shopt.*//g' bin/*sh
 
-# don't log ZK connections
-sed -i 's~log4j.logger.org.apache.zookeeper=INFO~log4j.logger.org.apache.zookeeper=WARN~g' config/log4j.properties
+# Hush logging for both Kafka and ZooKeeper
+sed -i 's~INFO~WARN~g' config/log4j.properties
 
 # Make sure you use relative paths in references like this, so that installation
 # is decoupled from runtime
