@@ -4,7 +4,7 @@ Apache Kafka is a highly scalable, fast, and fault-tolerant distributed streamin
 This repo publishes the docker image and helm chart for [Apache Kafka](https://kafka.apache.org/).
 
 ## How do we use kafka?
-Kafka forms the core of the Hypertrace streaming platform and being used extensively across the services. Kafka usage at Hypertrace can be categorised into 3 categories: Plain vanilla Kafka Clients, Kafka streams and Flink standalone jobs. We will be migrating Flink jobs also to Kafka streams.
+Kafka forms the core of the Hypertrace streaming platform and being used extensively across the services. Kafka usage at Hypertrace can be categorised into 3 categories: Plain vanilla Kafka Clients, Kafka streams and Streaming pipeline jobs. We are migrating streaming pipeline jobs also to Kafka streams.
 We use Confluent Avro schema-registry as a serialization mechanism for the messages published to Kafka and these Schemas are defined in the code along with their respective owner modules.
 
 ## Prerequisites
