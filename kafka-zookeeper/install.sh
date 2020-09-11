@@ -26,7 +26,7 @@ sed -i 's~INFO~WARN~g' config/log4j.properties
 mkdir -p data/kafka data/zookeeper logs
 
 # Set explicit, basic configuration
-cat > config/zookeeper.properties <<-EOF
+cat > config/zookeeper.properties <<-'EOF'
 dataDir=./data/zookeeper
 clientPort=2181
 maxClientCnxns=0
@@ -35,7 +35,7 @@ admin.enableServer=false
 4lw.commands.whitelist=srvr,ruok
 EOF
 
-cat > config/server.properties <<-EOF
+cat > config/server.properties <<-'EOF'
 broker.id=0
 zookeeper.connect=127.0.0.1:2181
 replica.socket.timeout.ms=1500
