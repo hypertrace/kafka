@@ -1,52 +1,42 @@
 # Kafka
-Apache Kafka is a highly scalable, fast, and fault-tolerant distributed streaming platform. 
+Apache Kafka is a highly scalable, fast, fault-tolerant and open-source distributed event streaming platform, which needs no introduction. 
 
 This repo publishes the docker image and helm chart for [Apache Kafka](https://kafka.apache.org/).
 
-## How do we use kafka?
-Kafka forms the core of the Hypertrace streaming platform and being used extensively across the services. Kafka usage at Hypertrace can be categorised into 3 categories: Plain vanilla Kafka Clients, Kafka streams and Streaming pipeline jobs. We are migrating streaming pipeline jobs also to Kafka streams.
-We use Confluent Avro schema-registry as a serialization mechanism for the messages published to Kafka and these Schemas are defined in the code along with their respective owner modules.
+## Description
+Hypertrace leverages Kafka for streaming the distributed trace data so that the platform can scale horizontally. All the components in the Hypertrace ingest pipeline read the data from and write back to Kafka topics. These components are horizontally scalable by running more replicas and also increasing the partitions for the Kafka topic.
 
 | ![space-1.jpg]( https://hypertrace-docs.s3.amazonaws.com/ingestion-pipeline.png) | 
 |:--:| 
 | *Hypertrace Ingestion Pipeline* |
 
+Hypertrace works with stock Kafka so any Kafka Docker image can be used or you can reuse your existing Kafka deployments.
+This repo is mainly to optimize the Kafka Docker image size, unify the image along with other Hypertrace Docker images, and have helm charts to easily deploy, scale and manage Kafka easily in Kubernetes. 
 
-## Prerequisites
-* Kubernetes 1.10+
-* Helm 3.0+
 
-## Docker Image
-The docker image is published to [Docker Hub](https://hub.docker.com/r/hypertrace/kafka)
+## Building Locally
+To build kafka image locally, run:
 
-## Helm Chart Components
-This chart will do the following:
-
-* Create a fixed size Kafka cluster using a [StatefulSet](http://kubernetes.io/docs/concepts/abstractions/controllers/statefulsets/).
-* Create a [PodDisruptionBudget](https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-disruption-budget/).
-* Create a [Headless Service](https://kubernetes.io/docs/concepts/services-networking/service/) to control the domain of the Kafka cluster.
-* Create a Service configured to connect to the available Kafka instance on the configured client port.
-* Optionally apply a [Pod Anti-Affinity](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#inter-pod-affinity-and-anti-affinity-beta-feature) to spread the Kafka cluster across nodes.
-* Optionally start a JMX Exporter container inside Kafka pods.
-* Optionally create a Prometheus ServiceMonitor for each enabled jmx exporter container.
-* Optionally add prometheus alerts.
-* Optionally create a new storage class.
-
-## Installing the Chart
-You can install the chart with the release name `kafka` as below.
-
-```console
-$ helm upgrade kafka ./helm --install --namespace hypertrace
+```
+./gradlew dockerBuildImages
 ```
 
-## Configuration
-You can specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
+`Note:` 
+- docker-compose uses `kafka-zookeeper` image so you have to build it from that folder in case you are working on that one. 
+- To read more about installing and configuring helm chart refer [BUILD.md](/BUILD.md).
 
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+## Testing
 
-```console
-$ helm upgrade my-release ./helm --install --namespace hypertrace -f values.yaml
+You can test the image you built after modification by running docker-compose or helm setup. 
+
+### docker-compose
+Change the tag for `kafka-zookeeper` from `:main` to `:test` in [docker-compose file](https://github.com/hypertrace/hypertrace/blob/main/docker/docker-compose.yml) like this.
+
+```yaml
+  kafka-zookeeper:
+    image: hypertrace/kafka-zookeeper:test
+    container_name: kafka-zookeeper
+    ...
 ```
 
-## Default Values
-- You can find all user-configurable settings, their defaults in [values.yaml](helm/values.yaml).
+and then run `docker-compose up` to test the setup.
