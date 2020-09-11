@@ -9,12 +9,12 @@ ENV KAFKA_VERSION=2.6.0 SCALA_VERSION=2.13
 
 USER root
 WORKDIR /install
-ADD install /tmp/install
-RUN /tmp/install && rm /tmp/install
+COPY install.sh /tmp/
+RUN /tmp/install.sh && rm /tmp/install.sh
 
 # Share the same base image to reduce layers used in testing
 FROM hypertrace/java:11
-LABEL maintainer="Hypertrace https://www.hypertrace.org/"
+LABEL MAINTAINER Hypertrace "https://www.hypertrace.org/"
 
 # Add HEALTHCHECK and ENTRYPOINT scripts into the default search path
 COPY docker-bin/* /usr/local/bin/
