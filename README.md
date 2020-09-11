@@ -40,3 +40,7 @@ Change the tag for `kafka-zookeeper` from `:main` to `:test` in [docker-compose 
 ```
 
 and then run `docker-compose up` to test the setup.
+
+## Docker Image Source:
+- [DockerHub > kafka](https://hub.docker.com/r/hypertrace/kafka)
+- [DockerHub > Pinot-servicemanager](https://hub.docker.com/r/hypertrace/kafka-zookeeper)
