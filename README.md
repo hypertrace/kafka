@@ -43,4 +43,4 @@ and then run `docker-compose up` to test the setup.
 
 ## Docker Image Source:
 - [DockerHub > kafka](https://hub.docker.com/r/hypertrace/kafka)
-- [DockerHub > Pinot-servicemanager](https://hub.docker.com/r/hypertrace/kafka-zookeeper)
+- [DockerHub > kafka-zookeeper](https://hub.docker.com/r/hypertrace/kafka-zookeeper)
