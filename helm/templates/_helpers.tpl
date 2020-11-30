@@ -75,3 +75,11 @@ else use user-provided URL
 {{- printf "zookeeper.%s.svc.cluster.local:2181" .Release.Namespace }}
 {{- end -}}
 {{- end -}}
+
+{{- define "kafkaservice.image" -}}
+  {{- if and .Values.image.tagOverride  -}}
+    {{- printf "%s:%s" .Values.image.repository .Values.image.tagOverride }}
+  {{- else -}}
+    {{- printf "%s:%s" .Values.image.repository .Chart.Version }}
+  {{- end -}}
+{{- end -}}

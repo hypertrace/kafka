@@ -31,7 +31,7 @@ spec:
       serviceAccountName: {{ template "kafka.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Chart.Version }}"
+          image: "{{ include "kafkaservice.image" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             {{- range $key, $value := .Values.listeners }}
