@@ -68,24 +68,20 @@ headlessServiceName: ""
 
 # Kafka configuration
 config:
-  autoCreateTopicsEnable: true
-  compressionType: gzip
+  autoCreateTopicsEnable: false
+  compressionType: producer
   defaultReplicationFactor: 1
   deleteTopicEnable: true
   groupInitialRebalanceDelayMs: 3000
   interBrokerListenerName: PLAINTEXT
   logDirs: /var/lib/kafka/data/topics
-  #logFlushIntervalMessages: 10000
   logFlushIntervalMessages: ""
-  #logFlushIntervalMs: 1000
   logFlushIntervalMs: ""
   logRetentionBytes: 1073741824
   logRetentionCheckIntervalMs: 300000
   logRetentionHours: 24
-  #logRollMs: -1
   logRollMs: ""
   logSegmentBytes: 1073741824
-  #messageMaxBytes: 1000012
   messageMaxBytes: ""
   minInsyncReplicas: 1
   numIoThreads: 8
@@ -110,7 +106,6 @@ config:
   socketSendBufferBytes: 102400
   transactionStateLogMinIsr: 3
   transactionStateLogReplicationFactor: 1
-  #zookeeperConnectOverride: zookeeper:2181
   zookeeperConnectOverride: ""
   zookeeperConnectionTimeoutMs: 30000
   zookeeperSessionTimeoutMs: 30000
