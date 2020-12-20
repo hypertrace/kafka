@@ -90,6 +90,7 @@ config:
   numRecoveryThreadsPerDataDir: 1
   offsetsRetentionMinutes: 10080
   offsetsTopicReplicationFactor: 1
+  numReplicaFetchers: 1
   replicaFetchBackoffMs: ""
   replicaFetchMaxBytes: ""
   replicaFetchMinBytes: ""
