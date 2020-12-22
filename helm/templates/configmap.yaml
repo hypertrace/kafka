@@ -191,6 +191,10 @@ data:
 
     ############################# Replication #############################
 
+    # Number of fetcher threads used to replicate messages from a source broker.
+    # Increasing this value can increase the degree of I/O parallelism in the follower broker.
+    num.replica.fetchers={{ int .Values.config.numReplicaFetchers }}
+
     {{- if .Values.config.replicaFetchBackoffMs }}
     # The amount of time to sleep when fetch partition error occurs
     replica.fetch.backoff.ms={{ int .Values.config.replicaFetchBackoffMs }}
