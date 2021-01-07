@@ -2,7 +2,7 @@
 version: "2.4"
 services:
   sut:
-    image: hypertrace/kafka-zookeeper:test
+    image: hypertrace/kafka-zookeeper:main
     container_name: sut
     networks:
       default:
