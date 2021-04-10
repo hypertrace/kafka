@@ -7,7 +7,7 @@ set -eux
 echo "*** Installing Kafka and dependencies"
 
 # Download scripts and config for Kafka and ZooKeeper, but not for Connect
-wget -qO- https://downloads.apache.org/kafka/$KAFKA_VERSION/kafka_$SCALA_VERSION-$KAFKA_VERSION.tgz | tar xz \
+wget -qO- https://archive.apache.org/dist/kafka/$KAFKA_VERSION/kafka_$SCALA_VERSION-$KAFKA_VERSION.tgz | tar xz \
   --wildcards --strip=1 --exclude=connect* */bin/zookeeper-* */bin/kafka-* */config
 
 # Remove bash as our images don't have it, and it isn't required
