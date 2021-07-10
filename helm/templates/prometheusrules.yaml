@@ -15,15 +15,16 @@ spec:
     - name: {{ include "kafka.fullname" . }}
       rules:
         - alert: KafkaDown
-          expr: up{job="kafka",pod=~".*kafka-[0-9]+"} == 0
+          expr: up{job="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}} == 0
           for: 5m
           labels:
             severity: warning
+            namespace: {{ .Release.Namespace }}
           annotations:
             summary: "Kafka broker is down"
             message: "Kafka broker is down on {{`{{ $labels.pod }}`}}. Could not scrape jmx-exporter for 5m."
         - alert: KafkaOfflinePartitions
-          expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount_value) > 0
+          expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount_value{namespace={{ .Release.Namespace | quote }}}) > 0
           for: 5m
           labels:
             severity: warning
@@ -31,7 +32,7 @@ spec:
             summary: "Kafka cluster has offline partitions"
             message: "{{`{{ $value }}`}} partitions in Kafka went offline (have no leader), cluster is probably broken."
         - alert: UnderReplicatedPartitions
-          expr: kafka_server_replicamanager_total_underreplicatedpartitions_value > 0
+          expr: kafka_server_replicamanager_total_underreplicatedpartitions_value{namespace={{ .Release.Namespace | quote }}} > 0
           for: 5m
           labels:
             severity: warning
@@ -39,7 +40,7 @@ spec:
             summary: "Kafka under replicated partitions"
             message: "There are {{`{{ $value }}`}} under replicated partitions on {{`{{ $labels.pod }}`}}"
         - alert: AbnormalControllerState
-          expr: sum(kafka_controller_kafkacontroller_activecontrollercount_value) != 1
+          expr: sum(kafka_controller_kafkacontroller_activecontrollercount_value{namespace={{ .Release.Namespace | quote }}}) != 1
           for: 5m
           labels:
             severity: warning
@@ -47,7 +48,7 @@ spec:
             summary: "Kafka abnormal controller state"
             message: "There are {{`{{ $value }}`}} active controllers in the cluster"
         - alert: UnderMinIsrPartitionCount
-          expr: kafka_server_replicamanager_total_underminisrpartitioncount_value > 0
+          expr: kafka_server_replicamanager_total_underminisrpartitioncount_value{namespace={{ .Release.Namespace | quote }}} > 0
           for: 5m
           labels:
             severity: warning
@@ -55,7 +56,7 @@ spec:
             summary: "Kafka under min ISR partitions"
             message: "There are {{`{{ $value }}`}} partitions under the min ISR on {{`{{ $labels.pod }}`}}"
         - alert: KafkaBrokerContainersDown
-          expr: absent(container_last_seen{container_name="kafka",pod_name=~".*kafka-[0-9]+"})
+          expr: absent(container_last_seen{container="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}})
           for: 5m
           labels:
             severity: critical
@@ -63,7 +64,7 @@ spec:
             summary: "All kafka containers down or in CrashLookBackOff status"
             message: "All kafka containers have been down or in CrashLookBackOff status for 3 minutes"
         - alert: KafkaContainerRestartedInTheLast5Minutes
-          expr: count(count_over_time(container_last_seen{container_name="kafka"}[5m])) > 2 * count(container_last_seen{container_name="kafka",pod_name=~".*kafka-[0-9]+"})
+          expr: count(count_over_time(container_last_seen{container="kafka",namespace={{ .Release.Namespace | quote }}}[5m])) > 2 * count(container_last_seen{container="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}})
           for: 5m
           labels:
             severity: warning
