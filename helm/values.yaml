@@ -139,7 +139,8 @@ listeners:
 # Monitoring
 servicemonitor:
   enabled: false
-  interval: 15s
+  interval: 30s
+  scrapeTimeout: 20s
   secure: false
   tlsConfig: {}
 
