@@ -5,7 +5,7 @@
 FROM cimg/openjdk:14.0.2 AS install
 
 # Use latest stable release here. Scala 2.13+ supports JRE 14
-ENV KAFKA_VERSION=2.6.0 SCALA_VERSION=2.13
+ENV KAFKA_VERSION=3.2.1 SCALA_VERSION=2.13
 
 USER root
 WORKDIR /install

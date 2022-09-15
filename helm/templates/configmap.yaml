@@ -22,6 +22,11 @@ data:
     # limitations under the License.
 
     # see kafka.server.KafkaConfig for additional details and defaults
+    ############################# Server upgrade #############################
+    # This property enables kafka rolling upgrade without downtime.
+    # Set it's value to the version you are upgrading from.
+    # Once the cluster's behavior and performance has been verified, bump the protocol version set it target version
+    inter.broker.protocol.version={{ .Values.config.interBrokerProtocolVersion }}
 
     ############################# Server Basics #############################
 
