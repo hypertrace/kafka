@@ -1,9 +1,9 @@
 # TODO: port this similarly to kafka-zookeeper in order to share base layer
 # The only assumption we make about this FROM is that it has a JRE in path
-FROM adoptopenjdk/openjdk11:jre-11.0.4_11@sha256:140ba182d696180600a2871a98f67ad0ee2d6a1e48a7c570d1c0e156860c2a9d
+FROM adoptopenjdk/openjdk11:jre-11.0.16.1_1@sha256:1e458a6a926a6265eb8abf1a4074162ee35984652b01d772f206b57406de0656
 
 # Use latest stable release here. Scala 2.13+ supports JRE 14
-ENV KAFKA_VERSION=2.6.0 SCALA_VERSION=2.13
+ENV KAFKA_VERSION=3.2.1 SCALA_VERSION=2.13
 
 RUN set -ex; \
   export DEBIAN_FRONTEND=noninteractive; \
