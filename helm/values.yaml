@@ -74,7 +74,9 @@ config:
   deleteTopicEnable: true
   groupInitialRebalanceDelayMs: 3000
   interBrokerListenerName: PLAINTEXT
-  interBrokerProtocolVersion: "2.6"
+  interBrokerProtocolVersion: "3.2"
+  logCleanerDeleteRetentionMs: ""
+  logCleanerThreads: ""
   logDirs: /var/lib/kafka/data/topics
   logFlushIntervalMessages: ""
   logFlushIntervalMs: ""

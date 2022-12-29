@@ -256,6 +256,15 @@ data:
     replication.quota.window.size.seconds={{ int .Values.config.replicationQuotaWindowSizeSeconds }}
     {{- end }}
 
+    {{- if .Values.config.logCleanerThreads }}
+    # The number of background threads to use for log cleaning
+    log.cleaner.threads={{ int .Values.config.logCleanerThreads }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerDeleteRetentionMs }}
+    # The amount of time to retain delete tombstone markers for log compacted topics.
+    log.cleaner.delete.retention.ms={{ int .Values.config.logCleanerDeleteRetentionMs }}
+    {{- end }}
   log4j.properties: |+
     # Licensed to the Apache Software Foundation (ASF) under one or more
     # contributor license agreements.  See the NOTICE file distributed with
