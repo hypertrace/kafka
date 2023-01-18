@@ -56,6 +56,8 @@ affinity: {}
 
 securityContext: {}
 
+hostNetwork: false
+
 # Persistence volume
 volume:
   storageClassName: standard
@@ -161,7 +163,7 @@ storageclass:
 # JMX port
 jmx:
   enabled: false
-  port: 5555
+  port: 5557
 
 ## Prometheus Exporter Configuration
 ## ref: https://prometheus.io/docs/instrumenting/exporters/
@@ -174,7 +176,7 @@ prometheus:
       repository: hypertrace/prometheus-jmx-exporter
       tag: 0.1.1
       pullPolicy: IfNotPresent
-    port: 5556
+    port: 5558
     resources:
       requests:
         cpu: "0.1"
