@@ -77,8 +77,16 @@ config:
   groupInitialRebalanceDelayMs: 3000
   interBrokerListenerName: PLAINTEXT
   interBrokerProtocolVersion: "3.2"
-  logCleanerDeleteRetentionMs: ""
+  logCleanerDeleteRetentionMs: "10800000"
   logCleanerThreads: ""
+  logCleanerBackoffMs: ""
+  logCleanerDedupeBufferSize: ""
+  logCleanerIoBufferLoadFactor: ""
+  logCleanerIoBufferSize: ""
+  logCleanerIoMaxBytesPerSecond: ""
+  logCleanerMaxCompactionLagMs: ""
+  logCleanerMinCleanableRatio: "0.25"
+  logCleanerMinCompactionLagMs: ""
   logDirs: /var/lib/kafka/data/topics
   logFlushIntervalMessages: ""
   logFlushIntervalMs: ""

@@ -261,9 +261,48 @@ data:
     log.cleaner.threads={{ int .Values.config.logCleanerThreads }}
     {{- end }}
 
+    {{- if .Values.config.logCleanerMinCleanableRatio }}
+    # The minimum ratio of dirty log to total log for a log to eligible for cleaning.
+    log.cleaner.min.cleanable.ratio={{ .Values.config.logCleanerMinCleanableRatio }}
+    {{- end }}
+
     {{- if .Values.config.logCleanerDeleteRetentionMs }}
     # The amount of time to retain delete tombstone markers for log compacted topics.
     log.cleaner.delete.retention.ms={{ int .Values.config.logCleanerDeleteRetentionMs }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerMinCompactionLagMs }}
+    # The minimum time a message will remain uncompacted in the log. Only applicable for logs that are being compacted.
+    log.cleaner.min.compaction.lag.ms = {{ int .Values.config.logCleanerMinCompactionLagMs }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerMaxCompactionLagMs }}
+    # The maximum time a message will remain ineligible for compaction in the log. Only applicable for logs that are being compacted.
+    log.cleaner.max.compaction.lag.ms = {{ int .Values.config.logCleanerMaxCompactionLagMs }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerIoMaxBytesPerSecond }}
+    # The log cleaner will be throttled so that the sum of its read and write i/o will be less than this value on average
+    log.cleaner.io.max.bytes.per.second = {{ int .Values.config.logCleanerIoMaxBytesPerSecond }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerDedupeBufferSize }}
+    # The total memory used for log deduplication across all cleaner threads
+    log.cleaner.dedupe.buffer.size = {{ .Values.config.logCleanerDedupeBufferSize }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerIoBufferSize }}
+    # The total memory used for log cleaner I/O buffers across all cleaner threads
+    log.cleaner.io.buffer.size = {{ .Values.config.logCleanerIoBufferSize }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerIoBufferLoadFactor }}
+    log.cleaner.io.buffer.load.factor = {{ .Values.config.logCleanerIoBufferLoadFactor }}
+    {{- end }}
+
+    {{- if .Values.config.logCleanerBackoffMs }}
+    # The amount of time to sleep when there are no logs to clean
+    log.cleaner.backoff.ms = {{ int .Values.config.logCleanerBackoffMs }}
     {{- end }}
   log4j.properties: |+
     # Licensed to the Apache Software Foundation (ASF) under one or more
