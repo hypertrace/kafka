@@ -1,6 +1,6 @@
 # TODO: port this similarly to kafka-zookeeper in order to share base layer
 # The only assumption we make about this FROM is that it has a JRE in path
-FROM adoptopenjdk/openjdk11:jre-11.0.18_10@sha256:fefef769fd9f1c2cb22e08b70f2adf13d79fc98f858d93e7f04a47f0afd99a4d
+FROM adoptopenjdk/openjdk11:jre-11.0.18_10@sha256:3282670f5b315c731cb69d62b5d7eb195392be4a55d22a398c9ed1008490de7d
 
 # Use latest stable release here. Scala 2.13+ supports JRE 14
 ENV KAFKA_VERSION=3.3.2 SCALA_VERSION=2.13
