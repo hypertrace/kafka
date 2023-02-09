@@ -2,5 +2,5 @@ apiVersion: v2
 name: kafka
 type: application
 description: kafka helm chart
-appVersion: 2.3.0
+appVersion: 3.3.2
 version: 0.1.0

@@ -1,9 +1,9 @@
 # TODO: port this similarly to kafka-zookeeper in order to share base layer
 # The only assumption we make about this FROM is that it has a JRE in path
-FROM adoptopenjdk/openjdk11:jre-11.0.16.1_1@sha256:1e458a6a926a6265eb8abf1a4074162ee35984652b01d772f206b57406de0656
+FROM adoptopenjdk/openjdk11:jre-11.0.18_10@sha256:3282670f5b315c731cb69d62b5d7eb195392be4a55d22a398c9ed1008490de7d
 
 # Use latest stable release here. Scala 2.13+ supports JRE 14
-ENV KAFKA_VERSION=3.2.1 SCALA_VERSION=2.13
+ENV KAFKA_VERSION=3.3.2 SCALA_VERSION=2.13
 
 RUN set -ex; \
   export DEBIAN_FRONTEND=noninteractive; \
@@ -24,10 +24,6 @@ RUN set -ex; \
   rm kafka_$SCALA_BINARY_VERSION-$KAFKA_VERSION.tgz; \
   \
   rm -rf /opt/kafka/site-docs; \
-  \
-  mkdir -p /opt/kafka/prometheus; \
-  curl -s -o /opt/kafka/prometheus/jmx_prometheus_javaagent-0.12.0.jar https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/0.12.0/jmx_prometheus_javaagent-0.12.0.jar; \
-  curl -s -o /opt/kafka/prometheus/kafka-2_0_0.yml https://raw.githubusercontent.com/prometheus/jmx_exporter/master/example_configs/kafka-2_0_0.yml; \
   \
   apt-get purge -y --auto-remove $buildDeps; \
   rm -rf /var/lib/apt/lists/*; \
