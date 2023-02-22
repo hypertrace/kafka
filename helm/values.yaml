@@ -74,7 +74,7 @@ config:
   compressionType: producer
   defaultReplicationFactor: 1
   deleteTopicEnable: true
-  groupInitialRebalanceDelayMs: 3000
+  groupInitialRebalanceDelayMs: 30000
   interBrokerListenerName: PLAINTEXT
   interBrokerProtocolVersion: "3.2"
   logCleanerDeleteRetentionMs: "10800000"
