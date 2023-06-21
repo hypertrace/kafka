@@ -24,7 +24,6 @@ jobs:
 
       - name: Run Trivy vulnerability scanner for kafka image
         uses: hypertrace/github-actions/trivy-image-scan@main
-        id: trivy-scan-kafka
         with:
           image: hypertrace/kafka
           output-mode: github
@@ -32,7 +31,6 @@ jobs:
 
       - name: Run Trivy vulnerability scanner for kafka-zookeeper image
         uses: hypertrace/github-actions/trivy-image-scan@main
-        id: trivy-scan-kafka-zk
         with:
           image: hypertrace/kafka-zookeeper
           output-mode: github
