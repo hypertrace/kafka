@@ -13,52 +13,34 @@ jobs:
     steps:
        # Set fetch-depth: 0 to fetch commit history and tags for use in version calculation
       - name: Check out code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      
-      - name: create checksum file
-        uses: hypertrace/github-actions/checksum@main
-
-      - name: Cache packages
-        uses: actions/cache@v2
-        with:
-          path: ~/.gradle
-          key: gradle-packages-${{ runner.os }}-${{ github.job }}-${{ hashFiles('**/checksum.txt') }}
-          restore-keys: |
-            gradle-packages-${{ runner.os }}-${{ github.job }}
-            gradle-packages-${{ runner.os }}
       
       - name: Build with Gradle
         uses: hypertrace/github-actions/gradle@main
         with: 
           args: build dockerBuildImages
 
-      - name: Determine docker tag
-        id: tag
-        run: echo ::set-output name=tag::$(./gradlew -q printDockerImageDefaultTag | head -1)
-
-      - name: Scan docker image
-        uses: azure/container-scan@v0.1
+      - name: Run Trivy vulnerability scanner for kafka image
+        uses: hypertrace/github-actions/trivy-image-scan@main
         with:
-          image-name: hypertrace/kafka-zookeeper:${{ steps.tag.outputs.tag }}
-        env:
-          DOCKLE_HOST: "unix:///var/run/docker.sock"
-        continue-on-error: true
+          image: hypertrace/kafka
+          output-mode: github
+          category: kafka
 
-      - name: Scan docker image
-        uses: azure/container-scan@v0.1
+      - name: Run Trivy vulnerability scanner for kafka-zookeeper image
+        uses: hypertrace/github-actions/trivy-image-scan@main
         with:
-          image-name: hypertrace/kafka:${{ steps.tag.outputs.tag }}
-        env:
-          DOCKLE_HOST: "unix:///var/run/docker.sock"
-        continue-on-error: true
+          image: hypertrace/kafka-zookeeper
+          output-mode: github
+          category: kafka-zookeeper
 
   validate-helm-charts:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out code
-        uses: actions/checkout@v2.3.4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
