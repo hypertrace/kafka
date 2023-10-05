@@ -95,7 +95,7 @@ config:
   logRetentionHours: 24
   logRollMs: ""
   logSegmentBytes: 1073741824
-  messageMaxBytes: ""
+  messageMaxBytes: "2097176"
   minInsyncReplicas: 1
   numIoThreads: 8
   numNetworkThreads: 3
@@ -106,9 +106,9 @@ config:
   numReplicaFetchers: 1
   replicaFetchBackoffMs: ""
   replicaFetchMaxBytes: ""
-  replicaFetchMinBytes: ""
+  replicaFetchMinBytes: "524288"
   replicaFetchResponseMaxBytes: ""
-  replicaFetchWaitMaxMs: ""
+  replicaFetchWaitMaxMs: "1000"
   replicaHighWatermarkCheckpointIntervalMs: ""
   replicaLagTimeMaxMs: ""
   replicaSocketReceiveBufferBytes: ""
