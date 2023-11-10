@@ -14,15 +14,15 @@ spec:
   groups:
     - name: {{ include "kafka.fullname" . }}
       rules:
-        - alert: KafkaDown
+        - alert: KafkaJmxDown
           expr: up{job="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}} == 0
           for: 5m
           labels:
             severity: warning
             namespace: {{ .Release.Namespace }}
           annotations:
-            summary: "Kafka broker is down"
-            message: "Kafka broker is down on {{`{{ $labels.pod }}`}}. Could not scrape jmx-exporter for 5m."
+            summary: "Kafka jmx port is down"
+            message: "Kafka jmx port is down on {{`{{ $labels.pod }}`}}. Could not scrape jmx-exporter for 5m."
         - alert: KafkaOfflinePartitions
           expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount_value{namespace={{ .Release.Namespace | quote }}}) > 0
           for: 5m
