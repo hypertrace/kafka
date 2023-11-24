@@ -71,6 +71,16 @@ cat > pom.xml <<-'EOF'
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.36</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.zookeeper</groupId>
+      <artifactId>zookeeper</artifactId>
+      <version>3.8.3</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.zookeeper</groupId>
+      <artifactId>zookeeper-jute</artifactId>
+      <version>3.8.3</version>
+    </dependency>
   </dependencies>
 </project>
 EOF
