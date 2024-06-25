@@ -78,7 +78,7 @@ config:
   deleteTopicEnable: true
   groupInitialRebalanceDelayMs: 30000
   interBrokerListenerName: PLAINTEXT
-  interBrokerProtocolVersion: "3.2"
+  interBrokerProtocolVersion: "3.6"
   logCleanerDeleteRetentionMs: "10800000"
   logCleanerThreads: ""
   logCleanerBackoffMs: ""
