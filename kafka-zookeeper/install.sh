@@ -74,12 +74,12 @@ cat > pom.xml <<-'EOF'
     <dependency>
       <groupId>org.apache.zookeeper</groupId>
       <artifactId>zookeeper</artifactId>
-      <version>3.8.3</version>
+      <version>3.8.4</version>
     </dependency>
     <dependency>
       <groupId>org.apache.zookeeper</groupId>
       <artifactId>zookeeper-jute</artifactId>
-      <version>3.8.3</version>
+      <version>3.8.4</version>
     </dependency>
   </dependencies>
 </project>

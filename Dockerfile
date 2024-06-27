@@ -1,7 +1,7 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.21_9@sha256:adbfa4e7aee9bd8d39424b018cb9835261929622d0b169b26b10c2e04fa6b8ff
+FROM adoptopenjdk/openjdk11:jre-11.0.23_9@sha256:81358f8e62b311b539fe9c527f1f6c5b8322c42865fb29f7523f300b07f02185
 
 # Use latest stable release here. Scala 2.13+ supports JRE 14
-ENV KAFKA_VERSION=3.6.0 SCALA_VERSION=2.13
+ENV KAFKA_VERSION=3.6.2 SCALA_VERSION=2.13
 
 RUN set -ex; \
   export DEBIAN_FRONTEND=noninteractive; \
@@ -19,9 +19,6 @@ RUN set -ex; \
   curl -SLs -o kafka_$SCALA_BINARY_VERSION-$KAFKA_VERSION.tgz "https://archive.apache.org/dist/kafka/$KAFKA_VERSION/kafka_$SCALA_BINARY_VERSION-$KAFKA_VERSION.tgz"; \
   gpg --verify kafka_$SCALA_BINARY_VERSION-$KAFKA_VERSION.tgz.asc kafka_$SCALA_BINARY_VERSION-$KAFKA_VERSION.tgz; \
   tar xzf kafka_$SCALA_BINARY_VERSION-$KAFKA_VERSION.tgz --strip-components=1 -C /opt/kafka; \
-  rm /opt/kafka/libs/zookeeper-3.8.2.jar /opt/kafka/libs/zookeeper-jute-3.8.2.jar; \
-  curl -SLs -o /opt/kafka/libs/zookeeper-3.8.2.jar https://repo1.maven.org/maven2/org/apache/zookeeper/zookeeper/3.8.3/zookeeper-3.8.3.jar; \
-  curl -SLs -o /opt/kafka/libs/zookeeper-jute-3.8.2.jar https://repo1.maven.org/maven2/org/apache/zookeeper/zookeeper-jute/3.8.3/zookeeper-jute-3.8.3.jar; \
   rm kafka_$SCALA_BINARY_VERSION-$KAFKA_VERSION.tgz; \
   \
   rm -rf /opt/kafka/site-docs; \
