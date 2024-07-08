@@ -16,58 +16,78 @@ spec:
       rules:
         - alert: KafkaDown
           expr: up{job="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}} == 0
-          for: 5m
+          for: {{ dig "KafkaDown" "for" "5m" .Values.prometheusrule }}
           labels:
-            severity: warning
-            namespace: {{ .Release.Namespace }}
+            severity: {{ dig "KafkaDown" "severity" "warning" .Values.prometheusrule }}
+            {{- with .Values.prometheusrule.additionalRuleLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           annotations:
             summary: "Kafka broker is down"
             message: "Kafka broker is down on {{`{{ $labels.pod }}`}}. Could not scrape jmx-exporter for 5m."
         - alert: KafkaOfflinePartitions
           expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount_value{namespace={{ .Release.Namespace | quote }}}) > 0
-          for: 5m
+          for: {{ dig "KafkaOfflinePartitions" "for" "5m" .Values.prometheusrule }}
           labels:
-            severity: warning
+            severity: {{ dig "KafkaOfflinePartitions" "severity" "warning" .Values.prometheusrule }}
+            {{- with .Values.prometheusrule.additionalRuleLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           annotations:
             summary: "Kafka cluster has offline partitions"
             message: "{{`{{ $value }}`}} partitions in Kafka went offline (have no leader), cluster is probably broken."
         - alert: UnderReplicatedPartitions
           expr: kafka_server_replicamanager_total_underreplicatedpartitions_value{namespace={{ .Release.Namespace | quote }}} > 0
-          for: 5m
+          for: {{ dig "UnderReplicatedPartitions" "for" "5m" .Values.prometheusrule }}
           labels:
-            severity: warning
+            severity: {{ dig "UnderReplicatedPartitions" "severity" "warning" .Values.prometheusrule }}
+            {{- with .Values.prometheusrule.additionalRuleLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           annotations:
             summary: "Kafka under replicated partitions"
             message: "There are {{`{{ $value }}`}} under replicated partitions on {{`{{ $labels.pod }}`}}"
         - alert: AbnormalControllerState
           expr: sum(kafka_controller_kafkacontroller_activecontrollercount_value{namespace={{ .Release.Namespace | quote }}}) != 1
-          for: 5m
+          for: {{ dig "AbnormalControllerState" "for" "5m" .Values.prometheusrule }}
           labels:
-            severity: warning
+            severity: {{ dig "AbnormalControllerState" "severity" "warning" .Values.prometheusrule }}
+            {{- with .Values.prometheusrule.additionalRuleLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           annotations:
             summary: "Kafka abnormal controller state"
             message: "There are {{`{{ $value }}`}} active controllers in the cluster"
         - alert: UnderMinIsrPartitionCount
           expr: kafka_server_replicamanager_total_underminisrpartitioncount_value{namespace={{ .Release.Namespace | quote }}} > 0
-          for: 5m
+          for: {{ dig "UnderMinIsrPartitionCount" "for" "5m" .Values.prometheusrule }}
           labels:
-            severity: warning
+            severity: {{ dig "UnderMinIsrPartitionCount" "severity" "warning" .Values.prometheusrule }}
+            {{- with .Values.prometheusrule.additionalRuleLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           annotations:
             summary: "Kafka under min ISR partitions"
             message: "There are {{`{{ $value }}`}} partitions under the min ISR on {{`{{ $labels.pod }}`}}"
         - alert: KafkaBrokerContainersDown
           expr: absent(container_last_seen{container="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}})
-          for: 5m
+          for: {{ dig "KafkaBrokerContainersDown" "for" "5m" .Values.prometheusrule }}
           labels:
-            severity: critical
+            severity: {{ dig "KafkaBrokerContainersDown" "severity" "critical" .Values.prometheusrule }}
+            {{- with .Values.prometheusrule.additionalRuleLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           annotations:
             summary: "All kafka containers down or in CrashLookBackOff status"
             message: "All kafka containers have been down or in CrashLookBackOff status for 3 minutes"
         - alert: KafkaContainerRestartedInTheLast5Minutes
           expr: count(count_over_time(container_last_seen{container="kafka",namespace={{ .Release.Namespace | quote }}}[5m])) > 2 * count(container_last_seen{container="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}})
-          for: 5m
+          for: {{ dig "KafkaContainerRestartedInTheLast5Minutes" "for" "5m" .Values.prometheusrule }}
           labels:
-            severity: warning
+            severity: {{ dig "KafkaContainerRestartedInTheLast5Minutes" "severity" "warning" .Values.prometheusrule }}
+            {{- with .Values.prometheusrule.additionalRuleLabels }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           annotations:
             summary: "One or more Kafka containers restarted too often"
             message: "One or more Kafka containers were restarted too often within the last 5 minutes"
