@@ -197,3 +197,4 @@ prometheus:
 prometheusrule:
   enabled: false
   annotations: {}
+  additionalRuleLabels: {}
