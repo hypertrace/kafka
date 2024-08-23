@@ -14,7 +14,7 @@ spec:
   groups:
     - name: {{ include "kafka.fullname" . }}
       rules:
-        - alert: KafkaDown
+        - alert: KafkaJmxDown
           expr: up{job="kafka",pod=~".*kafka-[0-9]+",namespace={{ .Release.Namespace | quote }}} == 0
           for: {{ dig "KafkaDown" "for" "5m" .Values.prometheusrule }}
           labels:
@@ -23,8 +23,8 @@ spec:
             {{- toYaml . | nindent 12 }}
             {{- end }}
           annotations:
-            summary: "Kafka broker is down"
-            message: "Kafka broker is down on {{`{{ $labels.pod }}`}}. Could not scrape jmx-exporter for 5m."
+            summary: "Kafka jmx port is down"
+            message: "Kafka jmx port is down on {{`{{ $labels.pod }}`}}. Could not scrape jmx-exporter for 5m."
         - alert: KafkaOfflinePartitions
           expr: sum(kafka_controller_kafkacontroller_offlinepartitionscount_value{namespace={{ .Release.Namespace | quote }}}) > 0
           for: {{ dig "KafkaOfflinePartitions" "for" "5m" .Values.prometheusrule }}
