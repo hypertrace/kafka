@@ -1,15 +1,13 @@
-# TODO: port this similarly to kafka-zookeeper in order to share base layer
-# The only assumption we make about this FROM is that it has a JRE in path
-FROM adoptopenjdk/openjdk11:jre-11.0.19_7@sha256:a2160bc43c40d98324f43260344bf70f3a1d6a408d5dc005d2e6fb4f0f788ec4
+FROM adoptopenjdk/openjdk11:jre-11.0.23_9@sha256:81358f8e62b311b539fe9c527f1f6c5b8322c42865fb29f7523f300b07f02185
 
 # Use latest stable release here. Scala 2.13+ supports JRE 14
-ENV KAFKA_VERSION=3.3.2 SCALA_VERSION=2.13
+ENV KAFKA_VERSION=3.7.1 SCALA_VERSION=2.13
 
 RUN set -ex; \
   export DEBIAN_FRONTEND=noninteractive; \
   runDeps='netcat-openbsd'; \
   buildDeps='curl ca-certificates gnupg dirmngr'; \
-  apt-get update && apt-get install -y $runDeps $buildDeps --no-install-recommends; \
+  apt-get update && apt-get upgrade -y && apt-get install -y $runDeps $buildDeps --no-install-recommends; \
   \
   curl -s -L -o KEYS https://www.apache.org/dist/kafka/KEYS; \
   gpg --import KEYS && rm KEYS; \

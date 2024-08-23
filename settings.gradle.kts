@@ -11,3 +11,4 @@ plugins {
 }
 
 include(":kafka-zookeeper")
+include(":docker")
