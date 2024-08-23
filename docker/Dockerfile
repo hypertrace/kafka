@@ -1,7 +1,7 @@
 FROM adoptopenjdk/openjdk11:jre-11.0.23_9@sha256:81358f8e62b311b539fe9c527f1f6c5b8322c42865fb29f7523f300b07f02185
 
 # Use latest stable release here. Scala 2.13+ supports JRE 14
-ENV KAFKA_VERSION=3.6.2 SCALA_VERSION=2.13
+ENV KAFKA_VERSION=3.7.1 SCALA_VERSION=2.13
 
 RUN set -ex; \
   export DEBIAN_FRONTEND=noninteractive; \
