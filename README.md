@@ -22,25 +22,13 @@ To build kafka image locally, run:
 ```
 
 `Note:` 
-- docker-compose uses `kafka-zookeeper` image so you have to build it from that folder in case you are working on that one. 
 - To read more about installing and configuring helm chart refer [BUILD.md](/BUILD.md).
 
 ## Testing
 
-You can test the image you built after modification by running docker-compose or helm setup. 
-
-### docker-compose
-Change the tag for `kafka-zookeeper` from `:main` to `:test` in [docker-compose file](https://github.com/hypertrace/hypertrace/blob/main/docker/docker-compose.yml) like this.
-
-```yaml
-  kafka-zookeeper:
-    image: hypertrace/kafka-zookeeper:test
-    container_name: kafka-zookeeper
-    ...
-```
+You can test the image you built after modification by running docker-compose or helm setup.
 
 and then run `docker-compose up` to test the setup.
 
 ## Docker Image Source:
 - [DockerHub > kafka](https://hub.docker.com/r/hypertrace/kafka)
-- [DockerHub > kafka-zookeeper](https://hub.docker.com/r/hypertrace/kafka-zookeeper)

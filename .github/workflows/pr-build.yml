@@ -22,7 +22,7 @@ jobs:
       - name: Build with Gradle
         uses: hypertrace/github-actions/gradle@main
         with:
-          args: build dockerBuildImages
+          args: dockerBuildImages
 
       - name: Run Trivy vulnerability scanner for kafka image
         uses: hypertrace/github-actions/trivy-image-scan@main
@@ -30,13 +30,6 @@ jobs:
           image: hypertrace/kafka
           output-mode: github
           category: kafka
-
-      - name: Run Trivy vulnerability scanner for kafka-zookeeper image
-        uses: hypertrace/github-actions/trivy-image-scan@main
-        with:
-          image: hypertrace/kafka-zookeeper
-          output-mode: github
-          category: kafka-zookeeper
 
   validate-helm-charts:
     runs-on: ubuntu-20.04
