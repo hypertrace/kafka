@@ -1,2 +1,11 @@
 # com.google.protobuf:protobuf-java
-CVE-2024-7254 exp:2024-10-31
+CVE-2024-7254 exp:2024-11-30
+
+# commons-io:commons-io
+CVE-2024-47554 exp:2024-11-30
+
+# org.eclipse.jetty:jetty-http
+CVE-2024-6763 exp:2024-11-30
+
+# org.eclipse.jetty:jetty-server
+CVE-2024-8184 exp:2024-11-30
